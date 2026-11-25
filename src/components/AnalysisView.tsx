@@ -64,10 +64,17 @@ function BetChecker({ families }: { families: CountFamily[] }) {
   const [famKey, setFamKey] = useState(families.find((f) => f.key.startsWith("fouls:home"))?.key ?? families[0]?.key);
   const fam = families.find((f) => f.key === famKey) ?? families[0];
   const [line, setLine] = useState<number>(fam ? Math.max(0.5, Math.round(fam.mean) - 0.5) : 0.5);
+  const [lineText, setLineText] = useState<string>(String(fam ? Math.max(0.5, Math.round(fam.mean) - 0.5) : 0.5));
   const [dir, setDir] = useState<"over" | "under">("over");
 
   if (!fam) return null;
   const pick = evaluateCountLine(fam, line, dir);
+
+  const applyLine = (next: number) => {
+    const safe = Math.max(0.5, Math.floor(next) + 0.5);
+    setLine(safe);
+    setLineText(String(safe));
+  };
 
   return (
     <div className="rounded-2xl border border-cyan-500/30 bg-cyan-950/10 p-4">
@@ -75,13 +82,13 @@ function BetChecker({ families }: { families: CountFamily[] }) {
         <Calculator className="h-4 w-4 text-cyan-400" /> Bahis Kontrol
         <span className="text-xs font-normal text-slate-400">— iddaa&apos;da gördüğünüz bahsi (faul, ofsayt, korner...) girin</span>
       </h3>
-      <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-[1fr_120px_140px]">
+      <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-[1fr_160px_140px]">
         <select
           value={fam.key}
           onChange={(e) => {
             const nf = families.find((f) => f.key === e.target.value);
             setFamKey(e.target.value);
-            if (nf) setLine(Math.max(0.5, Math.round(nf.mean) - 0.5));
+            if (nf) applyLine(Math.max(0.5, Math.round(nf.mean) - 0.5));
           }}
           className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white focus:border-cyan-500 focus:outline-none"
         >
@@ -99,29 +106,74 @@ function BetChecker({ families }: { families: CountFamily[] }) {
             );
           })}
         </select>
-        <input
-          type="number"
-          step={1}
-          min={0.5}
-          value={line}
-          onChange={(e) => {
-            const v = parseFloat(e.target.value);
-            if (Number.isFinite(v)) setLine(Math.max(0.5, Math.floor(v) + 0.5));
-          }}
-          className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white focus:border-cyan-500 focus:outline-none"
-        />
+
+        {/* Mobilde kolay kullanım için - / sayı / + barem seçici */}
+        <div className="flex items-center overflow-hidden rounded-lg border border-slate-700 bg-slate-950">
+          <button
+            type="button"
+            onClick={() => applyLine(Math.max(0.5, line - 1))}
+            className="flex h-10 w-11 shrink-0 items-center justify-center border-r border-slate-800 text-lg font-bold text-slate-200 active:bg-slate-800 hover:bg-slate-900"
+            aria-label="Baremi azalt"
+          >
+            −
+          </button>
+          <input
+            type="text"
+            inputMode="decimal"
+            value={lineText}
+            onChange={(e) => {
+              const raw = e.target.value;
+              setLineText(raw);
+              const v = parseFloat(raw.replace(",", "."));
+              if (Number.isFinite(v) && v >= 0) {
+                setLine(Math.max(0.5, Math.floor(v) + 0.5));
+              }
+            }}
+            onBlur={() => setLineText(String(line))}
+            className="w-full bg-transparent px-2 py-2 text-center text-sm font-bold text-white focus:outline-none"
+          />
+          <button
+            type="button"
+            onClick={() => applyLine(line + 1)}
+            className="flex h-10 w-11 shrink-0 items-center justify-center border-l border-slate-800 text-lg font-bold text-slate-200 active:bg-slate-800 hover:bg-slate-900"
+            aria-label="Baremi artır"
+          >
+            +
+          </button>
+        </div>
+
         <div className="grid grid-cols-2 gap-1 rounded-lg border border-slate-700 bg-slate-950 p-1">
           {(["over", "under"] as const).map((d) => (
             <button
               key={d}
+              type="button"
               onClick={() => setDir(d)}
-              className={`rounded-md py-1 text-xs font-semibold ${dir === d ? "bg-cyan-500 text-slate-950" : "text-slate-300"}`}
+              className={`rounded-md py-1.5 text-xs font-semibold ${dir === d ? "bg-cyan-500 text-slate-950" : "text-slate-300"}`}
             >
               {d === "over" ? "Üst" : "Alt"}
             </button>
           ))}
         </div>
       </div>
+
+      {/* Hızlı barem butonları */}
+      <div className="mt-2 flex flex-wrap gap-1.5">
+        {fam.lines.map((l) => (
+          <button
+            key={l}
+            type="button"
+            onClick={() => applyLine(l)}
+            className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${
+              l === line
+                ? "bg-cyan-500 text-slate-950"
+                : "border border-slate-800 bg-slate-900/80 text-slate-300 hover:border-slate-700"
+            }`}
+          >
+            {fmtLine(l)}
+          </button>
+        ))}
+      </div>
+
       <div className="mt-3">
         <PickCard pick={pick} />
       </div>
