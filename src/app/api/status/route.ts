@@ -5,17 +5,27 @@ import { getSyncState, startSync } from "@/lib/football/sync";
 
 export const dynamic = "force-dynamic";
 
-const LIST_REFRESH_MS = 6 * 3600 * 1000;
+/** En son geçen 09:00 Türkiye saatinin (06:00 UTC) timestamp'ini döner */
+function lastNineAmTrMs(now = new Date()): number {
+  const target = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 6, 0, 0, 0)
+  );
+  if (now.getTime() < target.getTime()) {
+    target.setUTCDate(target.getUTCDate() - 1);
+  }
+  return target.getTime();
+}
 
 export async function GET() {
   const cfg = loadConfig();
   const store = loadStore();
   const sync = getSyncState();
 
+  // En son 09:00 TR saatinden sonra henüz güncellenmediyse otomatik senkronize et
   const canAutoSync = cfg.source === "espn" || Boolean(cfg.apiKey);
   if (canAutoSync && !sync.running && sync.phase !== "error") {
     const last = store.lastListSync ? Date.parse(store.lastListSync) : 0;
-    if (Date.now() - last > LIST_REFRESH_MS) startSync("full");
+    if (last < lastNineAmTrMs()) startSync("full");
   }
 
   const all = Object.values(store.fixtures);
