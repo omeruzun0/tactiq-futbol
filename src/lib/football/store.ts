@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import zlib from "zlib";
 import { DEFAULT_LEAGUE_IDS, currentSeason } from "./leagues";
 
 export interface TeamStatLine {
@@ -77,6 +78,7 @@ export interface AppConfig {
 
 const DATA_DIR = path.join(process.cwd(), "data");
 const STORE_FILE = path.join(DATA_DIR, "store.json");
+const SEED_FILE = path.join(process.cwd(), "src", "data", "seed-store.json.gz");
 const CONFIG_FILE = path.join(DATA_DIR, "config.json");
 
 type G = typeof globalThis & {
@@ -107,6 +109,12 @@ export function loadStore(): StoreData {
     if (fs.existsSync(STORE_FILE)) {
       const parsed = JSON.parse(fs.readFileSync(STORE_FILE, "utf8")) as StoreData;
       if (parsed.season === season && parsed.source === cfg.source) {
+        data = parsed;
+      }
+    } else if (cfg.source === "espn" && fs.existsSync(SEED_FILE)) {
+      const raw = zlib.gunzipSync(fs.readFileSync(SEED_FILE)).toString("utf8");
+      const parsed = JSON.parse(raw) as StoreData;
+      if (parsed.season === season && parsed.source === "espn") {
         data = parsed;
       }
     }
