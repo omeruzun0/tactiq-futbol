@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "TactIQ Futbol | Kapsamlı Maç Analiz & Tahmin Motoru",
+  title: "SERT/HIZLI/ÇÖZÜNÜRLÜK | Futbol Analiz & Tahmin Motoru",
   description:
     "Dixon-Coles Poisson gol modeli, 6 boyutlu taktiksel oyun tarzı eşleşmesi, xG ve form analizi ile profesyonel futbol tahmin uygulaması.",
   icons: {

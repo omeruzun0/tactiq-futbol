@@ -121,7 +121,7 @@ export default function Dashboard() {
               className="h-11 w-11 rounded-xl border border-emerald-500/40 object-cover shadow-md shadow-emerald-500/10"
             />
             <div>
-              <h1 className="text-base font-extrabold tracking-tight text-white">TactIQ Futbol</h1>
+              <h1 className="text-base font-extrabold tracking-tight text-white">SERT/HIZLI/ÇÖZÜNÜRLÜK</h1>
               <p className="text-xs text-slate-400">Oyun tarzı benzerliğine göre bahis güvenilirlik analizi</p>
             </div>
           </div>
