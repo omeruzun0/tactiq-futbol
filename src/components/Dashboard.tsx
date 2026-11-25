@@ -5,7 +5,7 @@ import { AnalysisResult } from "@/lib/football/types";
 import AnalysisView from "./AnalysisView";
 import SettingsModal, { StatusData } from "./SettingsModal";
 import TeamPicker, { TeamOption } from "./TeamPicker";
-import { CalendarDays, Cpu, Loader2, Search, Settings } from "lucide-react";
+import { CalendarDays, Loader2, Search, Settings } from "lucide-react";
 
 interface FixtureItem {
   id: number;
@@ -114,9 +114,12 @@ export default function Dashboard() {
       <header className="sticky top-0 z-30 border-b border-slate-800/80 bg-[#070b14]/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 text-slate-950">
-              <Cpu className="h-5 w-5" />
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo.jpg"
+              alt="Logo"
+              className="h-11 w-11 rounded-xl border border-emerald-500/40 object-cover shadow-md shadow-emerald-500/10"
+            />
             <div>
               <h1 className="text-base font-extrabold tracking-tight text-white">TactIQ Futbol</h1>
               <p className="text-xs text-slate-400">Oyun tarzı benzerliğine göre bahis güvenilirlik analizi</p>

@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: "TactIQ Futbol | Kapsamlı Maç Analiz & Tahmin Motoru",
   description:
     "Dixon-Coles Poisson gol modeli, 6 boyutlu taktiksel oyun tarzı eşleşmesi, xG ve form analizi ile profesyonel futbol tahmin uygulaması.",
+  icons: {
+    icon: "/logo.jpg",
+  },
 };
 
 export default function RootLayout({
